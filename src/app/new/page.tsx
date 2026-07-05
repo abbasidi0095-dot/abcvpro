@@ -55,9 +55,19 @@ const NewPageInner = () => {
   const params = useSearchParams();
   const editId = params.get("cv");
 
+  const [user, setUser] = useState<{ id: string; email: string; isPro: boolean } | null>(null);
   const [step, setStep] = useState<Step>("job");
   const [busy, setBusy] = useState(Boolean(editId));
   const [prevStep, setPrevStep] = useState<Step>("job");
+
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.user) setUser(d.user);
+      })
+      .catch(() => {});
+  }, []);
 
   // Step 1: job
   const [jobMode, setJobMode] = useState<"url" | "text">("text");
@@ -552,6 +562,20 @@ const NewPageInner = () => {
                   </button>
                 </div>
               </div>
+
+              {plan === "paid" && !user?.isPro && (
+                <div className="mt-5 rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">Premium Feature</p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    Watermark-free rendering is locked. Upgrade to premium to instantly download high-quality, professional PDFs.
+                  </p>
+                  <Button asChild size="sm" className="mt-3 w-full shimmer-btn">
+                    <a href="https://whop.com/checkout/plan_PQ7X2ccj7dkcT" target="_blank" rel="noopener noreferrer">
+                      <span className="shimmer-text text-xs tracking-wide">Unlock Pro for $1.80</span>
+                    </a>
+                  </Button>
+                </div>
+              )}
 
               <div className="mt-6 flex flex-col gap-2">
                 <Button onClick={refreshPdf} disabled={rendering} variant="outline" className="w-full">
