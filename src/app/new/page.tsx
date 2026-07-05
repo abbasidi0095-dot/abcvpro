@@ -96,6 +96,12 @@ const NewPageInner = () => {
   const [accentColor, setAccentColor] = useState("#2563eb");
   const [fontId, setFontId] = useState("inter");
   const [plan, setPlan] = useState<"free" | "paid">("free");
+  
+  // Promo code states
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [validatingPromo, setSubmittingPromo] = useState(false);
+
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [rendering, setRendering] = useState(false);
 
@@ -212,7 +218,13 @@ const NewPageInner = () => {
       const ok = await saveEdits(); if (!ok) return;
       const r = await fetch(`/api/cvs/${cvId}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ templateId, accentColor, fontId, plan }),
+        body: JSON.stringify({ 
+          templateId, 
+          accentColor, 
+          fontId, 
+          plan,
+          ...(promoApplied ? { promo: promoCode } : {})
+        }),
       });
       if (!r.ok) throw new Error("Render failed");
       const blob = await r.blob();
@@ -227,7 +239,13 @@ const NewPageInner = () => {
     try {
       const r = await fetch(`/api/cvs/${cvId}`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ templateId, accentColor, fontId, plan }),
+        body: JSON.stringify({ 
+          templateId, 
+          accentColor, 
+          fontId, 
+          plan,
+          ...(promoApplied ? { promo: promoCode } : {})
+        }),
       });
       if (!r.ok) throw new Error("Render failed");
       const blob = await r.blob(); const url = URL.createObjectURL(blob);
@@ -564,16 +582,72 @@ const NewPageInner = () => {
               </div>
 
               {plan === "paid" && !user?.isPro && (
-                <div className="mt-5 rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
-                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">Premium Feature</p>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                    Watermark-free rendering is locked. Upgrade to premium to instantly download high-quality, professional PDFs.
-                  </p>
-                  <Button asChild size="sm" className="mt-3 w-full shimmer-btn">
-                    <a href={`https://whop.com/checkout/plan_PQ7X2ccj7dkcT?email=${encodeURIComponent(emailDetail || "")}&redirect_url=${encodeURIComponent("https://www.abcv.site/thank-you")}`} target="_blank" rel="noopener noreferrer">
-                      <span className="shimmer-text text-xs tracking-wide">Unlock Pro for $1.80</span>
-                    </a>
-                  </Button>
+                <div className="mt-5 rounded-xl border border-primary/30 bg-primary/5 p-4 text-center space-y-4">
+                  <div>
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">Premium Feature</p>
+                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                      Watermark-free rendering is locked. Upgrade to premium to instantly download high-quality, professional PDFs.
+                    </p>
+                  </div>
+
+                  {promoApplied ? (
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-lg p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 animate-pulse">
+                      ✓ Promo Code Applied: Free Pro CV unlocked!
+                    </div>
+                  ) : (
+                    <>
+                      {/* Whop Checkout Link */}
+                      <Button asChild size="sm" className="w-full h-9 shimmer-btn">
+                        <a href={`https://whop.com/checkout/plan_PQ7X2ccj7dkcT?email=${encodeURIComponent(emailDetail || "")}&redirect_url=${encodeURIComponent("https://www.abcv.site/thank-you")}`} target="_blank" rel="noopener noreferrer">
+                          <span className="shimmer-text text-xs tracking-wide">Unlock Pro for $1.80</span>
+                        </a>
+                      </Button>
+
+                      {/* Promo Code Input */}
+                      <div className="pt-2 border-t border-border/50">
+                        <div className="flex gap-1.5">
+                          <Input 
+                            type="text" 
+                            placeholder="Enter Promo Code" 
+                            className="h-8 text-xs text-center uppercase" 
+                            value={promoCode} 
+                            onChange={(e) => setPromoCode(e.target.value)}
+                          />
+                          <Button 
+                            size="sm" 
+                            variant="secondary" 
+                            className="h-8 text-xs font-semibold px-3"
+                            disabled={validatingPromo || !promoCode.trim()}
+                            onClick={async () => {
+                              setSubmittingPromo(true);
+                              try {
+                                const r = await fetch("/api/promo/validate", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ code: promoCode })
+                                });
+                                const d = await r.json();
+                                if (d.valid) {
+                                  setPromoApplied(true);
+                                  toast.success("Promo code applied successfully!", { description: "You can now download your clean, watermark-free PDF!" });
+                                  // Refresh PDF with promo unlocked
+                                  setTimeout(() => void refreshPdf(), 100);
+                                } else {
+                                  toast.error("Invalid promo code");
+                                }
+                              } catch {
+                                toast.error("Error validating code");
+                              } finally {
+                                setSubmittingPromo(false);
+                              }
+                            }}
+                          >
+                            {validatingPromo ? <Loader2 className="size-3 animate-spin" /> : "Apply"}
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 

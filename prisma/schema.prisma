@@ -90,3 +90,9 @@ model Checkout {
   ticketId  String   @unique
   createdAt DateTime @default(now())
 }
+
+model Promo {
+  id        String   @id @default("active_promo")
+  code      String   @default("FREEABCV")
+  updatedAt DateTime @updatedAt
+}

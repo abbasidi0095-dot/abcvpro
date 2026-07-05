@@ -78,6 +78,10 @@ function AdminPageInner() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [checkouts, setCheckouts] = useState<CheckoutRow[]>([]);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
+  
+  // Promo code states
+  const [adminPromoCode, setAdminPromoCode] = useState("");
+  const [savingPromo, setSavingPromo] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -111,6 +115,13 @@ function AdminPageInner() {
         setReviews(d.reviews);
       } else {
         toast.error("Failed to load dashboard data");
+      }
+
+      // Fetch the active promo code
+      const rPromo = await fetch("/api/admin/promo");
+      const dPromo = await rPromo.json();
+      if (rPromo.ok) {
+        setAdminPromoCode(dPromo.code || "");
       }
     } catch {
       toast.error("Network error. Please try again.");
@@ -255,45 +266,93 @@ function AdminPageInner() {
         </Button>
       </div>
 
-      {/* Stats Board */}
-      <div className="mt-6 sm:mt-8 grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4 flex items-center gap-4 border-border/50">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500">
-            <Users className="size-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Total Users</span>
-            <p className="text-xl font-bold">{stats?.totalUsers || 0}</p>
-          </div>
-        </Card>
+      {/* Stats Board & Promo Code Settings */}
+      <div className="mt-6 sm:mt-8 grid gap-4 grid-cols-1 md:grid-cols-3">
+        <div className="md:col-span-2 grid gap-4 grid-cols-2">
+          <Card className="p-4 flex items-center gap-4 border-border/50">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500">
+              <Users className="size-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Total Users</span>
+              <p className="text-xl font-bold">{stats?.totalUsers || 0}</p>
+            </div>
+          </Card>
 
-        <Card className="p-4 flex items-center gap-4 border-border/50">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
-            <TrendingUp className="size-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Premium Users</span>
-            <p className="text-xl font-bold">{stats?.proUsers || 0}</p>
-          </div>
-        </Card>
+          <Card className="p-4 flex items-center gap-4 border-border/50">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+              <TrendingUp className="size-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Premium Users</span>
+              <p className="text-xl font-bold">{stats?.proUsers || 0}</p>
+            </div>
+          </Card>
 
-        <Card className="p-4 flex items-center gap-4 border-border/50">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-pink-500/10 text-pink-500">
-            <CreditCard className="size-5" />
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Total Orders</span>
-            <p className="text-xl font-bold">{stats?.totalCheckouts || 0}</p>
-          </div>
-        </Card>
+          <Card className="p-4 flex items-center gap-4 border-border/50">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-pink-500/10 text-pink-500">
+              <CreditCard className="size-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Total Orders</span>
+              <p className="text-xl font-bold">{stats?.totalCheckouts || 0}</p>
+            </div>
+          </Card>
 
-        <Card className="p-4 flex items-center gap-4 border-border/50">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
-            <DollarSign className="size-5" />
-          </div>
+          <Card className="p-4 flex items-center gap-4 border-border/50">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+              <DollarSign className="size-5" />
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Revenue</span>
+              <p className="text-xl font-bold">${(stats?.totalRevenue || 0).toFixed(2)}</p>
+            </div>
+          </Card>
+        </div>
+
+        {/* Promo Code configuration Card */}
+        <Card className="p-5 border-border/50 flex flex-col justify-between bg-gradient-to-br from-card to-muted/10">
           <div>
-            <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Revenue</span>
-            <p className="text-xl font-bold">${(stats?.totalRevenue || 0).toFixed(2)}</p>
+            <span className="text-[10px] uppercase font-bold text-primary tracking-widest flex items-center gap-1">
+              ⚡ Settings Panel
+            </span>
+            <h3 className="text-sm font-bold text-foreground mt-1">Active Promo Code</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Allows any user to unlock premium layouts and download watermarked-free PDFs for free.</p>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <Input 
+              type="text" 
+              placeholder="e.g. FREEABCV" 
+              className="h-9 uppercase text-center font-mono font-semibold"
+              value={adminPromoCode}
+              onChange={(e) => setAdminPromoCode(e.target.value)}
+            />
+            <Button 
+              size="sm" 
+              className="h-9 font-semibold px-4 shimmer-btn"
+              disabled={savingPromo || !adminPromoCode.trim()}
+              onClick={async () => {
+                setSavingPromo(true);
+                try {
+                  const r = await fetch("/api/admin/promo", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code: adminPromoCode })
+                  });
+                  if (r.ok) {
+                    toast.success("Promo code updated successfully!");
+                  } else {
+                    toast.error("Failed to update promo code");
+                  }
+                } catch {
+                  toast.error("Network error");
+                } finally {
+                  setSavingPromo(false);
+                }
+              }}
+            >
+              {savingPromo ? <Loader2 className="size-3 animate-spin" /> : "Save"}
+            </Button>
           </div>
         </Card>
       </div>

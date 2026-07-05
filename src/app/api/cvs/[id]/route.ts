@@ -94,7 +94,21 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
   const wantsPaid = style.plan === "paid";
   const paymentCheck = wantsPaid ? checkPaidGenerationAllowed() : { allowed: false, reason: "free_plan_selected" };
-  const noWatermark = user.isPro || (wantsPaid && paymentCheck.allowed);
+  
+  // Verify if a valid promo code was passed in the request body
+  let promoUnlocked = false;
+  try {
+    const rawBody = await req.clone().json().catch(() => ({}));
+    if (rawBody?.promo && rawBody.promo.trim()) {
+      const activePromo = await prisma.promo.findUnique({ where: { id: "active_promo" } });
+      if (activePromo && rawBody.promo.toUpperCase().trim() === activePromo.code) {
+        promoUnlocked = true;
+        console.log(`[PROMO] Unlocked watermark-free PDF render via code matches for CV: ${id}`);
+      }
+    }
+  } catch {}
+
+  const noWatermark = user.isPro || promoUnlocked || (wantsPaid && paymentCheck.allowed);
 
   let pdf: Buffer;
   try {
