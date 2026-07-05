@@ -75,22 +75,32 @@ function extractPageMarginsMm(css: string): { top: number; right: number; bottom
   return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] };
 }
 
-/** Large, secure, repeating diagonal watermark grid overlay for free-tier renders.
- *  Sits absolutely on top of all text, making it impossible to strip or bypass with AI. */
-function centeredWatermarkHtml(label: string): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
-    <text x="120" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="11" fill="rgba(15, 23, 42, 0.14)" transform="rotate(-35 120 120)" text-anchor="middle">${label}</text>
+/** Large, secure, repeating diagonal watermark grid overlays (both background & foreground) for free-tier renders.
+ *  Uses high-visibility RED color in a cross-hatch sandwich to prevent any form of AI or PDF editor stripping. */
+function centeredWatermarkHtml(label: string): { foreground: string; background: string } {
+  const fgSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text x="100" y="100" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="10.5" fill="rgba(220, 38, 38, 0.16)" transform="rotate(-35 100 100)" text-anchor="middle">${label}</text>
   </svg>`;
-  const b64 = Buffer.from(svg).toString("base64");
+  const fgB64 = Buffer.from(fgSvg).toString("base64");
+
+  const bgSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text x="100" y="100" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="10.5" fill="rgba(220, 38, 38, 0.10)" transform="rotate(35 100 100)" text-anchor="middle">${label}</text>
+  </svg>`;
+  const bgB64 = Buffer.from(bgSvg).toString("base64");
   
-  return `
-  <!-- Secure repeating watermark overlay grid -->
-  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 999999; background-image: url('data:image/svg+xml;base64,${b64}'); background-repeat: repeat;"></div>
-  
-  <!-- Free footer notice -->
-  <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #94a3b8; z-index: 999999; pointer-events: none; opacity: 0.85; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
-    Free Plan — Generated on abCV.site
-  </div>`;
+  return {
+    foreground: `
+    <!-- Secure FOREGROUND red watermark overlay grid -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 999999; background-image: url('data:image/svg+xml;base64,${fgB64}'); background-repeat: repeat;"></div>
+    
+    <!-- Free footer notice -->
+    <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #dc2626; z-index: 999999; pointer-events: none; opacity: 0.95; background: rgba(255,255,255,0.95); padding: 2px 8px; border-radius: 4px; border: 1.5px solid #fca5a5;">
+      Free Plan — Generated on abCV.site
+    </div>`,
+    background: `
+    <!-- Secure BACKGROUND red watermark overlay grid -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;base64,${bgB64}'); background-repeat: repeat; opacity: 0.85;"></div>`
+  };
 }
 
 /**
@@ -124,7 +134,9 @@ export async function renderCvPdf(args: RenderArgs): Promise<Buffer> {
   const levelLabels = (LEVEL_LABELS as Record<string, { high: string; medium: string }>)[lang] ?? LEVEL_LABELS.en;
   const uiLabels = (UI_LABELS as Record<string, { languages: string; skills: string; experience: string; contact: string; summary: string }>)[lang] ?? UI_LABELS.en;
 
-  const watermarkHtml = args.isPro ? "" : centeredWatermarkHtml("ABCV — FREE VERSION");
+  const watermark = args.isPro 
+    ? { foreground: "", background: "" } 
+    : centeredWatermarkHtml("ABCV — FREE VERSION");
 
   const buildHtml = (fontScale: number) => {
     const html = tpl({
@@ -142,11 +154,14 @@ export async function renderCvPdf(args: RenderArgs): Promise<Buffer> {
       uiLabels,
     });
     
-    // Inject the watermark directly inside the first .page container so it inherits positioning constraints correctly.
+    // Inject background and foreground watermarks in page wrapper to create the secure red lock sandwich
     if (html.includes('<div class="page">')) {
-      return html.replace('<div class="page">', `<div class="page" style="position: relative;">${watermarkHtml}`);
+      return html.replace(
+        '<div class="page">', 
+        `<div class="page" style="position: relative;">${watermark.background}${watermark.foreground}`
+      );
     }
-    return html.replace("</body>", `${watermarkHtml}</body>`);
+    return html.replace("</body>", `${watermark.foreground}</body>`);
   };
 
   const margins = extractPageMarginsMm(templateSrc);
