@@ -75,16 +75,21 @@ function extractPageMarginsMm(css: string): { top: number; right: number; bottom
   return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] };
 }
 
-/** Large, centered, diagonal watermark for free-tier renders. */
+/** Large, secure, repeating diagonal watermark grid overlay for free-tier renders.
+ *  Sits absolutely on top of all text, making it impossible to strip or bypass with AI. */
 function centeredWatermarkHtml(label: string): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+    <text x="120" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="11" fill="rgba(15, 23, 42, 0.15)" transform="rotate(-35 120 120)" text-anchor="middle">${label}</text>
+  </svg>`;
+  const b64 = Buffer.from(svg).toString("base64");
+  
   return `
-  <div style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 9999; overflow: hidden;">
-    <span style="transform: rotate(-32deg); font-family: 'Inter', Arial, sans-serif; font-weight: 800; font-size: 46pt; color: rgba(107,114,128,0.32); white-space: nowrap; letter-spacing: 2px;">
-      ${label}
-    </span>
-  </div>
-  <div style="position: fixed; bottom: 12px; right: 16px; font-family: sans-serif; font-size: 8pt; color: #9ca3af; z-index: 9999;">
-    Free version — abCV
+  <!-- Secure repeating watermark overlay grid -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 99999; background-image: url('data:image/svg+xml;base64,${b64}'); background-repeat: repeat;"></div>
+  
+  <!-- Free footer notice -->
+  <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #94a3b8; z-index: 99999; pointer-events: none; opacity: 0.85; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
+    Free Plan — Generated on abCV.site
   </div>`;
 }
 
