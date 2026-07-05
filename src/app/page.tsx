@@ -3,9 +3,12 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { AuthForm } from "@/components/auth-form";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import {
   Palette,
   ImageIcon,
@@ -17,6 +20,7 @@ import {
   Wand2,
   Download,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 
 const features = [
@@ -48,6 +52,16 @@ function swatchStyle(i: number): CSSProperties {
 
 export default function Home() {
   const [authed, setAuthed] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
+  
+  // New review form states
+  const [revName, setRevName] = useState("");
+  const [revEmail, setRevEmail] = useState("");
+  const [revRating, setRevRating] = useState("5");
+  const [revText, setRevText] = useState("");
+  const [submittingRev, setSubmittingRev] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { t } = useI18n();
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +70,43 @@ export default function Home() {
       .then((r) => r.json())
       .then((d) => setAuthed(!!d.user))
       .catch(() => {});
+
+    // Fetch approved reviews
+    fetch("/api/reviews")
+      .then((r) => r.json())
+      .then((d) => setReviews(d.reviews || []))
+      .catch(() => {});
   }, []);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!revName || !revEmail || !revText) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    setSubmittingRev(true);
+    try {
+      const r = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: revName, email: revEmail, rating: revRating, text: revText }),
+      });
+      if (r.ok) {
+        toast.success("Review submitted!", { description: "Thank you! Your review is pending administrator approval." });
+        setRevName("");
+        setRevEmail("");
+        setRevText("");
+        setRevRating("5");
+        setIsDialogOpen(false);
+      } else {
+        toast.error("Failed to submit review.");
+      }
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setSubmittingRev(false);
+    }
+  };
 
   // GSAP entrance + scroll reveals
   useEffect(() => {
@@ -227,6 +277,102 @@ export default function Home() {
                 <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* REVIEWS & TESTIMONIALS */}
+      <section className="px-6 py-16 sm:py-24 bg-muted/20 border-t border-b border-border/40">
+        <div className="mx-auto max-w-6xl">
+          <div className="section-head mx-auto mb-10 max-w-xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">Testimonials</p>
+            <h2 className="font-bold tracking-tight" style={{ fontSize: "clamp(1.5rem, 4vw, 2.25rem)" }}>
+              What our users say
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">Hear from hundreds of successful professionals who landed interviews with abCV.</p>
+          </div>
+
+          {/* Horizontal Scrolling Reviews */}
+          <div className="flex gap-5 overflow-x-auto pb-6 pt-2 no-scrollbar scroll-smooth snap-x snap-mandatory">
+            {reviews.map((r, i) => (
+              <div 
+                key={r.id || i}
+                className="reveal-card card-hover snap-start shrink-0 w-[280px] sm:w-[350px] bg-card border border-border/60 rounded-2xl p-6 shadow-sm flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="font-bold text-foreground block text-sm sm:text-base">{r.name}</span>
+                    <div className="flex text-amber-500 text-xs gap-0.5">
+                      {Array.from({ length: r.rating }).map((_, sIdx) => (
+                        <span key={sIdx}>★</span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic">
+                    "{r.text}"
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                  Verified Purchase
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Submit Review Trigger */}
+          <div className="mt-10 text-center">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger render={<Button variant="outline" className="rounded-full px-8 h-10 border-primary/20 hover:bg-primary/5 text-primary" />}>
+                Write a Review
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px] rounded-2xl border p-6 bg-card shadow-lg" showCloseButton={true}>
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-bold text-foreground">Write a Review</DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground">Share your experience with our resume builder.</DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={handleReviewSubmit} className="space-y-4 mt-4 text-left">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="rev-name">Your Name</Label>
+                    <Input id="rev-name" type="text" required placeholder="Alex Chen" value={revName} onChange={(e) => setRevName(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="rev-email">Email Address</Label>
+                    <Input id="rev-email" type="email" required placeholder="alex@example.com" value={revEmail} onChange={(e) => setRevEmail(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="rev-rating">Star Rating</Label>
+                    <select 
+                      id="rev-rating"
+                      value={revRating} 
+                      onChange={(e) => setRevRating(e.target.value)}
+                      className="w-full h-10 rounded-lg border border-input bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    >
+                      <option value="5">5 Stars ★★★★★</option>
+                      <option value="4">4 Stars ★★★★☆</option>
+                      <option value="3">3 Stars ★★★☆☆</option>
+                      <option value="2">2 Stars ★★☆☆☆</option>
+                      <option value="1">1 Star ★☆☆☆☆</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="rev-text">Your Review</Label>
+                    <textarea 
+                      id="rev-text" 
+                      rows={4} 
+                      required 
+                      placeholder="Share your detailed feedback..." 
+                      value={revText} 
+                      onChange={(e) => setRevText(e.target.value)}
+                      className="w-full rounded-lg border border-input bg-card p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    />
+                  </div>
+                  <Button type="submit" disabled={submittingRev} className="w-full h-10 rounded-xl shimmer-btn mt-2">
+                    {submittingRev ? <Loader2 className="size-4 animate-spin" /> : "Submit Review"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>

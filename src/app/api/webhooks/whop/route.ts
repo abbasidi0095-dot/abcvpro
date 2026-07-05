@@ -132,6 +132,21 @@ export async function POST(req: NextRequest) {
           // Generate a custom receipt / ticket id
           const ticketId = `ABCV-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
+          // Log the successful checkout event in our DB
+          try {
+            await prisma.checkout.create({
+              data: {
+                email,
+                amount: 1.8,
+                status: "succeeded",
+                ticketId,
+              }
+            });
+            console.log(`[WHOP WEBHOOK] Logged successful checkout for ${email} with ticket: ${ticketId}`);
+          } catch (logErr) {
+            console.error("[WHOP WEBHOOK] Failed to log checkout row:", logErr);
+          }
+
           // Send the welcome/delivery email
           await sendEmail({
             to: email,

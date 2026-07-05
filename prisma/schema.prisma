@@ -71,3 +71,22 @@ model Otp {
 
   @@index([email])
 }
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  rating    Int      @default(5)
+  text      String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Checkout {
+  id        String   @id @default(cuid())
+  email     String
+  amount    Float    @default(1.8)
+  status    String   @default("succeeded")
+  ticketId  String   @unique
+  createdAt DateTime @default(now())
+}
