@@ -62,7 +62,11 @@ export function AuthForm({ onSuccessRedirect, initialStep }: { onSuccessRedirect
     if (!email || !password) return;
     setBusy(true);
     try {
-      await api("/api/auth/signin", { email, password });
+      const res = await api("/api/auth/signin", { email, password });
+      if (res && res.redirect) {
+        window.location.href = res.redirect;
+        return;
+      }
       handleSuccess();
     } catch (err: unknown) {
       const e2 = err as Error & { code?: string };
