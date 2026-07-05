@@ -1,0 +1,8 @@
+{
+  "id": "techbold",
+  "name": "Tech Bold",
+  "description": "Futuristic cyberpunk terminal style with neon glowing grids and monospace font accents.",
+  "accentDefault": "#d946ef",
+  "fonts": ["Courier New", "Consolas", "Courier", "monospace"],
+  "preview": "techbold.png"
+}

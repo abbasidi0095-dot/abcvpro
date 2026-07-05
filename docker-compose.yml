@@ -1,0 +1,24 @@
+version: '3'
+services:
+  web:
+    image: 408945636866.dkr.ecr.us-east-1.amazonaws.com/abcv-app:latest
+    ports:
+      - "80:3000"
+    environment:
+      - DATABASE_URL=postgresql://abcv:SuperSecretPass123!@abcv-db.ccnakc46kulj.us-east-1.rds.amazonaws.com:5432/abcv
+      - NEXTAUTH_SECRET=7wr+QbR1oyBR+WGjx8+ICBFLGLK1H1bSzmf26Orx/7ZudMExViUesC8dWUzGa/Dm
+      - COGNITO_REGION=us-east-1
+      - COGNITO_USER_POOL_ID=us-east-1_K5gvSg0eJ
+      - COGNITO_CLIENT_ID=47ps3r16956k3tpr25srhi90ho
+      - COGNITO_CLIENT_SECRET=7us9se2sl4va3f6gv5o0q7221vglbfqoko1jk4dc8ikgjl8idhe
+      - COGNITO_DOMAIN=abcv-auth.auth.us-east-1.amazoncognito.com
+      - COGNITO_TOKEN_VALIDITY_DAYS=30
+      - COGNITO_REDIRECT_URI=https://o7yy5tlngj.execute-api.us-east-1.amazonaws.com/api/auth/callback/cognito
+      - COGNITO_LOGOUT_URI=https://o7yy5tlngj.execute-api.us-east-1.amazonaws.com/login
+      - LLM_PROVIDER=vertex
+      - LLM_MODEL=google/gemini-2.5-flash-lite
+      - GOOGLE_CLOUD_PROJECT=neat-talon-498015-d8
+      - VERTEX_LOCATION=global
+      - NEXTAUTH_URL=https://o7yy5tlngj.execute-api.us-east-1.amazonaws.com
+      - ABCV_LLM_DEBUG=1
+      - VERTEX_CREDENTIALS_JSON=${VERTEX_CREDENTIALS_JSON}

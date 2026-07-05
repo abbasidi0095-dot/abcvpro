@@ -1,0 +1,8 @@
+{
+  "id": "bento",
+  "name": "Bento Grid",
+  "description": "Premium structured style with rounded clean panels inspired by Apple's product showcase grids.",
+  "accentDefault": "#0284c7",
+  "fonts": ["Inter", "System UI", "sans-serif"],
+  "preview": "bento.png"
+}

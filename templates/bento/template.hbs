@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { margin: 0; size: A4; }
+  :root { --accent: {{accentColor}}; --font-scale: {{fontScale}}; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { 
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    color: #1e293b; 
+    line-height: 1.45; 
+    font-size: calc(9.2pt * var(--font-scale)); 
+    background-color: #f1f5f9;
+  }
+  
+  .page { 
+    min-height: 297mm; 
+    width: 210mm; 
+    padding: 12mm;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Bento Grid Card wrapper */
+  .bento-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  /* Bento Header Panel */
+  .bento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .photo {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 9999px;
+    border: 2px solid var(--accent);
+  }
+
+  .photo-placeholder {
+    width: 55px;
+    height: 55px;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .name-title h1 {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .name-title .role {
+    font-size: 9pt;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 1px;
+  }
+
+  .contact-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: 8pt;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  /* Main grid sections */
+  .bento-container {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .bento-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bento-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Bento inner title */
+  .bento-title {
+    font-size: 9.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #0f172a;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bento-title-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    display: inline-block;
+  }
+
+  .summary-text {
+    font-size: 8.5pt;
+    color: #475569;
+    line-height: 1.5;
+    text-align: justify;
+  }
+
+  /* Experience styles */
+  .exp-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .exp-item {
+    position: relative;
+    padding-bottom: 2px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .exp-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2px;
+  }
+
+  .role-company {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .company-name {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .exp-dates {
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .bullets {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .bullets li {
+    font-size: 8pt;
+    color: #475569;
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 1px;
+    line-height: 1.4;
+  }
+
+  .bullets li::before {
+    content: "•";
+    position: absolute;
+    left: 0; top: 0;
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  /* Skills tags */
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .skill-pill {
+    font-size: 7.5pt;
+    font-weight: 600;
+    background-color: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    padding: 2.5px 8px;
+    border-radius: 6px;
+  }
+
+  /* Languages bento */
+  .languages-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lang-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8.5pt;
+  }
+
+  .lang-name {
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .lang-badge {
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: color-mix(in oklch, var(--accent) 10%, transparent);
+    color: var(--accent);
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- Header Bento Card -->
+  <div class="bento-card bento-header">
+    <div class="header-left">
+      {{#if photoB64}}
+        <img class="photo" src="{{photoB64}}" alt="" />
+      {{else}}
+        <div class="photo-placeholder">{{initials}}</div>
+      {{/if}}
+      <div class="name-title">
+        <h1>{{fullName}}</h1>
+        {{#if roleTitle}}<div class="role">{{roleTitle}}</div>{{/if}}
+      </div>
+    </div>
+    <div class="contact-grid">
+      <div>{{email}}</div>
+      {{#if phone}}<div>{{phone}}</div>{{/if}}
+    </div>
+  </div>
+
+  <!-- Bento grid layout -->
+  <div class="bento-container">
+    <div class="bento-left">
+      <!-- Summary Card -->
+      <div class="bento-card">
+        <div class="bento-title">
+          <span class="bento-title-dot"></span>{{uiLabels.summary}}
+        </div>
+        <p class="summary-text">{{content.summary}}</p>
+      </div>
+
+      <!-- Experience Card -->
+      <div class="bento-card" style="flex: 1;">
+        <div class="bento-title">
+          <span class="bento-title-dot"></span>{{uiLabels.experience}}
+        </div>
+        <div class="exp-timeline">
+          {{#each content.experience}}
+            <div class="exp-item">
+              <div class="exp-head">
+                <div class="role-company">
+                  <span>{{title}}</span>
+                  <span class="company-name"> @ {{company}}</span>
+                </div>
+                <div class="exp-dates">{{startDate}} — {{endDate}}</div>
+              </div>
+              <ul class="bullets">
+                {{#each bullets}}<li>{{this}}</li>{{/each}}
+              </ul>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <div class="bento-right">
+      <!-- Skills Card -->
+      <div class="bento-card" style="flex: 1;">
+        <div class="bento-title">
+          <span class="bento-title-dot"></span>{{uiLabels.skills}}
+        </div>
+        <div class="skills-grid">
+          {{#each content.skills}}
+            <span class="skill-pill">{{this}}</span>
+          {{/each}}
+        </div>
+      </div>
+
+      <!-- Languages Card -->
+      {{#if content.languages}}
+      <div class="bento-card">
+        <div class="bento-title">
+          <span class="bento-title-dot"></span>{{uiLabels.languages}}
+        </div>
+        <div class="languages-grid">
+          {{#each content.languages}}
+            <div class="lang-item">
+              <span class="lang-name">{{this.name}}</span>
+              <span class="lang-badge">{{this.level}}</span>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
+</body>
+</html>

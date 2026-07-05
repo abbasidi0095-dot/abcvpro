@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { margin: 0; size: A4; }
+  :root { --accent: {{accentColor}}; --font-scale: {{fontScale}}; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { 
+    font-family: Georgia, serif; 
+    color: #1c1917; 
+    line-height: 1.5; 
+    font-size: calc(9.5pt * var(--font-scale)); 
+    background-color: #ffffff;
+  }
+  
+  .page { 
+    min-height: 297mm; 
+    width: 210mm; 
+    padding: 22mm 18mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Asymmetric high-end editorial header */
+  .header {
+    border-bottom: 1.5px solid #292524;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .header-left {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+  }
+
+  .photo {
+    width: 65px;
+    height: 87px;
+    object-fit: cover;
+    border: 1px solid #78716c;
+    border-radius: 2px;
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+  }
+  .photo:hover {
+    filter: none;
+  }
+
+  .photo-placeholder {
+    width: 65px;
+    height: 87px;
+    border: 1.5px solid #292524;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 400;
+    color: #44403c;
+    font-style: italic;
+    background-color: #fafaf9;
+  }
+
+  .title-block h1 {
+    font-size: 24pt;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: #1c1917;
+    line-height: 1;
+    font-family: Georgia, serif;
+    text-transform: capitalize;
+  }
+
+  .title-block .role {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: 6px;
+  }
+
+  .contact-info {
+    text-align: right;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 7.5pt;
+    font-weight: 500;
+    color: #57524e;
+    letter-spacing: 0.02em;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  /* Asymmetric Columns: Main Content */
+  .grid {
+    display: flex;
+    gap: 32px;
+    flex: 1;
+  }
+
+  .col-main {
+    flex: 1.7;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .col-sidebar {
+    width: 170px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-left: 1px solid #e7e5e4;
+    padding-left: 20px;
+  }
+
+  /* Section Title: Editorial Serif Layout */
+  .section-title {
+    font-family: Georgia, serif;
+    font-size: 11pt;
+    font-weight: 400;
+    font-style: italic;
+    color: #1c1917;
+    border-bottom: 1px solid #292524;
+    padding-bottom: 3px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  
+  .section-title::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0;
+    width: 25px;
+    height: 1px;
+    background-color: var(--accent);
+  }
+
+  /* Summary details */
+  .summary-text {
+    font-size: 9pt;
+    color: #44403c;
+    text-align: justify;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Experience styles */
+  .exp-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .exp-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  .exp-role-company {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1c1917;
+  }
+  
+  .exp-company-highlight {
+    font-style: italic;
+    font-weight: 400;
+    color: #57524e;
+  }
+
+  .exp-date {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 7.5pt;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .exp-bullets {
+    list-style: square;
+    padding-left: 14px;
+  }
+
+  .exp-bullets li {
+    font-size: 8.5pt;
+    color: #44403c;
+    line-height: 1.5;
+    margin-bottom: 3px;
+  }
+
+  /* Skills sidebar: Elegant List */
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .skill-item {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8pt;
+    font-weight: 500;
+    color: #44403c;
+    padding: 3px 6px;
+    background-color: #fafaf9;
+    border-radius: 2px;
+    transition: background-color 0.2s, color 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .skill-item:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+  }
+
+  /* Languages */
+  .languages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lang-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8.5pt;
+  }
+
+  .lang-name {
+    font-weight: 600;
+    color: #44403c;
+  }
+
+  .lang-level {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      {{#if photoB64}}
+        <img class="photo" src="{{photoB64}}" alt="" />
+      {{else}}
+        <div class="photo-placeholder">{{initials}}</div>
+      {{/if}}
+      <div class="title-block">
+        <h1>{{fullName}}</h1>
+        {{#if roleTitle}}<div class="role">{{roleTitle}}</div>{{/if}}
+      </div>
+    </div>
+    <div class="contact-info">
+      <div>{{email}}</div>
+      {{#if phone}}<div>{{phone}}</div>{{/if}}
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-main">
+      <div>
+        <div class="section-title">{{uiLabels.summary}}</div>
+        <p class="summary-text">{{content.summary}}</p>
+      </div>
+
+      <div style="flex: 1;">
+        <div class="section-title">{{uiLabels.experience}}</div>
+        <div class="exp-timeline">
+          {{#each content.experience}}
+            <div class="exp-item">
+              <div class="exp-head">
+                <div class="exp-role-company">
+                  <span>{{title}}</span>
+                  <span class="exp-company-highlight">, {{company}}</span>
+                </div>
+                <div class="exp-date">{{startDate}} — {{endDate}}</div>
+              </div>
+              <ul class="exp-bullets">
+                {{#each bullets}}<li>{{this}}</li>{{/each}}
+              </ul>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sidebar">
+      <div style="flex: 1;">
+        <div class="section-title">{{uiLabels.skills}}</div>
+        <div class="skills-list">
+          {{#each content.skills}}
+            <span class="skill-item">{{this}}</span>
+          {{/each}}
+        </div>
+      </div>
+
+      {{#if content.languages}}
+      <div>
+        <div class="section-title">{{uiLabels.languages}}</div>
+        <div class="languages">
+          {{#each content.languages}}
+            <div class="lang-row">
+              <span class="lang-name">{{this.name}}</span>
+              <span class="lang-level">{{this.level}}</span>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
+</body>
+</html>

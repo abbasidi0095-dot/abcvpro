@@ -1,0 +1,8 @@
+{
+  "id": "editorial",
+  "name": "Editorial",
+  "description": "Minimalist high-end design agency aesthetic with asymmetric column alignments and large editorial serif typography.",
+  "accentDefault": "#ea580c",
+  "fonts": ["Georgia", "Times New Roman", "Times", "serif"],
+  "preview": "editorial.png"
+}
