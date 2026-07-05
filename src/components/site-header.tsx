@@ -143,10 +143,8 @@ export function SiteHeader() {
               {/* Mobile-only Dropdown */}
               <div className="flex sm:hidden">
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="outline" size="icon" className="size-8 rounded-lg" aria-label="Open menu">
-                      <Menu className="size-4" />
-                    </Button>
+                  <DropdownMenuTrigger render={<Button variant="outline" size="icon" className="size-8 rounded-lg" aria-label="Open menu" />}>
+                    <Menu className="size-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-44 border border-border/60 bg-popover/90 backdrop-blur-md p-1">
                     <DropdownMenuItem render={<Link href="/dashboard" prefetch={false} className="flex items-center gap-2 cursor-pointer w-full" />}>
