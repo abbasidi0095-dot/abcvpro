@@ -13,7 +13,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zinc-fabric-chicago-month.trycloudflare.com"),
+  metadataBase: new URL("https://www.abcv.site"),
   title: "abCV — AI-led CV generator & Tailored Resume Builder",
   description:
     "Generate tailored CVs, beautiful resumes, and matching cover letters in seconds with AI. Paste a job link, upload details, and export clean PDFs instantly.",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "modern resume design",
     "Bento grid resume",
   ],
-  authors: [{ name: "abCV Team", url: "https://zinc-fabric-chicago-month.trycloudflare.com" }],
+  authors: [{ name: "abCV Team", url: "https://www.abcv.site" }],
   creator: "abCV",
   publisher: "abCV",
   robots: {
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://zinc-fabric-chicago-month.trycloudflare.com",
-    title: "abCV — AI-led CV generator & Tailored Resume Builder",
+    url: "https://www.abcv.site",
+    title: "abCV",
     description: "Generate tailored CVs, beautiful resumes, and matching cover letters in seconds with AI. Export pixel-perfect PDFs instantly.",
     siteName: "abCV",
     images: [
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "abCV — AI-led CV generator & Tailored Resume Builder",
+    title: "abCV",
     description: "Generate tailored CVs, beautiful resumes, and matching cover letters in seconds with AI.",
     images: ["/frontend.png"],
     creator: "@abcv",
