@@ -485,7 +485,7 @@ const NewPageInner = () => {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="phone">{t("new.details.phone")}</Label>
-                  <Input id="phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" />
+                  <Input id="phone" type="text" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t("new.details.language")}</Label>
