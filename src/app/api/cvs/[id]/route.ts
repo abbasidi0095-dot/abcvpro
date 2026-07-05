@@ -108,7 +108,8 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     }
   } catch {}
 
-  const noWatermark = user.isPro || promoUnlocked || (wantsPaid && paymentCheck.allowed);
+  // A render has no watermark ONLY if they selected "paid" AND are either Pro, or have a valid promo code
+  const noWatermark = wantsPaid && (user.isPro || promoUnlocked || paymentCheck.allowed);
 
   let pdf: Buffer;
   try {

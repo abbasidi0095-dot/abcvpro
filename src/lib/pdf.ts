@@ -79,16 +79,16 @@ function extractPageMarginsMm(css: string): { top: number; right: number; bottom
  *  Sits absolutely on top of all text, making it impossible to strip or bypass with AI. */
 function centeredWatermarkHtml(label: string): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
-    <text x="120" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="11" fill="rgba(15, 23, 42, 0.15)" transform="rotate(-35 120 120)" text-anchor="middle">${label}</text>
+    <text x="120" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="11" fill="rgba(15, 23, 42, 0.14)" transform="rotate(-35 120 120)" text-anchor="middle">${label}</text>
   </svg>`;
   const b64 = Buffer.from(svg).toString("base64");
   
   return `
   <!-- Secure repeating watermark overlay grid -->
-  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 99999; background-image: url('data:image/svg+xml;base64,${b64}'); background-repeat: repeat;"></div>
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 999999; background-image: url('data:image/svg+xml;base64,${b64}'); background-repeat: repeat;"></div>
   
   <!-- Free footer notice -->
-  <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #94a3b8; z-index: 99999; pointer-events: none; opacity: 0.85; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
+  <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #94a3b8; z-index: 999999; pointer-events: none; opacity: 0.85; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
     Free Plan — Generated on abCV.site
   </div>`;
 }
@@ -141,6 +141,11 @@ export async function renderCvPdf(args: RenderArgs): Promise<Buffer> {
       levelLabels,
       uiLabels,
     });
+    
+    // Inject the watermark directly inside the first .page container so it inherits positioning constraints correctly.
+    if (html.includes('<div class="page">')) {
+      return html.replace('<div class="page">', `<div class="page" style="position: relative;">${watermarkHtml}`);
+    }
     return html.replace("</body>", `${watermarkHtml}</body>`);
   };
 
