@@ -119,12 +119,12 @@ export default function Home() {
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (reduce || !rootRef.current) return;
 
-        // Hero entrance timeline
+        // Hero entrance timeline - using fromTo to prevent StrictMode or client-side transition "stuck" states
         const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        tl.from(".hero-word", { y: 20, opacity: 0, duration: 0.8, stagger: 0.03, ease: "power3.out" })
-          .from(".hero-sub", { y: 15, opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.5")
-          .from(".hero-cta", { y: 10, opacity: 0, duration: 0.5, stagger: 0.08, ease: "power2.out" }, "-=0.4")
-          .from(".hero-badge-row > *", { y: 5, opacity: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }, "-=0.3");
+        tl.fromTo(".hero-word", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.03, ease: "power3.out" })
+          .fromTo(".hero-sub", { y: 15, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.5")
+          .fromTo(".hero-cta", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: "power2.out" }, "-=0.4")
+          .fromTo(".hero-badge-row > *", { y: 5, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }, "-=0.3");
 
         // Parallax blobs
         gsap.to(".blob-a", { yPercent: -30, scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
@@ -139,11 +139,11 @@ export default function Home() {
 
         // Section headings
         gsap.utils.toArray<HTMLElement>(".section-head").forEach((el) => {
-          gsap.from(el, { y: 24, opacity: 0, duration: 0.5, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } });
+          gsap.fromTo(el, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } });
         });
 
         // CTA section entrance
-        gsap.from(".cta-fade", { y: 30, opacity: 0, duration: 0.5, scrollTrigger: { trigger: ".cta-section", start: "top 80%", once: true } });
+        gsap.fromTo(".cta-fade", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, scrollTrigger: { trigger: ".cta-section", start: "top 80%", once: true } });
 
         cleanup = () => { ScrollTrigger.getAll().forEach((st) => st.kill()); gsap.killTweensOf("*"); };
       } catch {}
@@ -188,22 +188,8 @@ export default function Home() {
                 <span className="shimmer-text text-base tracking-wide">{t("home.hero.create")}</span>
               </Link>
             </Button>
-            {!authed && (
-              <Dialog>
-                <DialogTrigger render={<Button size="lg" variant="outline" className="hero-cta rounded-full px-8 min-w-[150px] h-12" />}>
-                  {t("home.hero.signin")}
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] border-none p-0 bg-transparent shadow-none" showCloseButton={false}>
-                  <DialogTitle className="sr-only">Sign In</DialogTitle>
-                  <DialogDescription className="sr-only">Sign in to your account</DialogDescription>
-                  <div className="bg-card w-full rounded-2xl border-border/60 p-6 sm:p-8 relative">
-                    <AuthForm onSuccessRedirect="/dashboard" />
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
             {authed && (
-              <Button asChild size="lg" variant="outline" className="hero-cta rounded-full px-8">
+              <Button asChild size="lg" variant="outline" className="hero-cta rounded-full px-8 min-w-[150px] h-12">
                 <Link href="/dashboard">{t("home.hero.dashboard")}</Link>
               </Button>
             )}
@@ -399,20 +385,6 @@ export default function Home() {
                 <span className="shimmer-text text-base tracking-wide">{t("home.hero.create")}</span>
               </Link>
             </Button>
-            {!authed && (
-              <Dialog>
-                <DialogTrigger render={<Button size="lg" variant="outline" className="rounded-full px-8 min-w-[150px] h-12" />}>
-                  {t("home.hero.signin")}
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] border-none p-0 bg-transparent shadow-none" showCloseButton={false}>
-                  <DialogTitle className="sr-only">Sign In</DialogTitle>
-                  <DialogDescription className="sr-only">Sign in to your account</DialogDescription>
-                  <div className="bg-card w-full rounded-2xl border-border/60 p-6 sm:p-8 relative">
-                    <AuthForm onSuccessRedirect="/dashboard" />
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
             {authed && (
               <Button asChild size="lg" variant="outline" className="rounded-full px-8">
                 <Link href="/dashboard">{t("home.cta.dashboard")}</Link>
