@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createHmac } from "crypto";
+import { renderCvPdf } from "@/lib/pdf";
+import { sendEmail } from "@/lib/email";
+import { CVContentSchema, JobParsedSchema, type CVContent } from "@/lib/schemas";
 
 const WHOP_WEBHOOK_SECRET = process.env.WHOP_WEBHOOK_SECRET || "";
 
 /**
  * Production-ready Whop Webhook Handler with HMAC-SHA256 Signature Verification.
- * Integrates directly with Whop's automated membership triggers to provision Pro features.
+ * Integrates directly with Whop's automated membership triggers to provision Pro features
+ * and automatically emails the user their watermark-free premium CV.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -84,6 +88,99 @@ export async function POST(req: NextRequest) {
         },
       });
       console.log(`[WHOP WEBHOOK] Successfully upgraded/created Pro user: ${email} (ID: ${user.id})`);
+
+      // Automatically find the user's latest CV to render and email it to them!
+      try {
+        const latestCv = await prisma.cv.findFirst({
+          where: { userId: user.id },
+          orderBy: { updatedAt: "desc" },
+          include: { job: true }
+        });
+
+        if (latestCv) {
+          let roleTitle: string | null = null;
+          if (latestCv.job) {
+            try { roleTitle = JobParsedSchema.parse(latestCv.job.parsedJson).jobTitle; } catch { /* ignore */ }
+          }
+
+          let content: CVContent;
+          try {
+            content = CVContentSchema.parse(latestCv.contentJson);
+          } catch {
+            content = latestCv.contentJson as CVContent;
+          }
+
+          if (!roleTitle && content.targetRole) {
+            roleTitle = content.targetRole;
+          }
+
+          // Render the high-resolution, watermark-free PDF
+          const pdfBuffer = await renderCvPdf({
+            templateId: latestCv.templateId,
+            accentColor: latestCv.accentColor,
+            fontId: latestCv.fontId,
+            fullName: latestCv.fullName,
+            email: latestCv.email,
+            phone: latestCv.phone,
+            photoBase64: latestCv.photoBase64,
+            roleTitle,
+            content,
+            language: latestCv.language || "en",
+            isPro: true, // Unlock watermark
+          });
+
+          // Generate a custom receipt / ticket id
+          const ticketId = `ABCV-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+          // Send the welcome/delivery email
+          await sendEmail({
+            to: email,
+            subject: "Your Premium abCV is Here! 🎉 (No Watermark)",
+            html: `
+              <div style="font-family: sans-serif; color: #1e293b; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <span style="background: linear-gradient(135deg, #7c3aed, #d946ef); color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">abCV Pro</span>
+                </div>
+                <h2 style="color: #0f172a; text-align: center; margin-bottom: 5px;">Thank You for Your Purchase!</h2>
+                <p style="font-size: 14px; text-align: center; color: #64748b; margin-top: 0;">Ticket / Order ID: <strong>${ticketId}</strong></p>
+                <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0;">
+                <p style="font-size: 14px; line-height: 1.5; color: #334155;">
+                  Hi <strong>${latestCv.fullName}</strong>,
+                </p>
+                <p style="font-size: 14px; line-height: 1.5; color: #334155;">
+                  Your payment has been successfully processed! We have automatically unlocked your account and attached your premium, **watermark-free** CV PDF directly to this email.
+                </p>
+                <div style="background-color: #f8fafc; border-radius: 8px; padding: 12px; margin: 15px 0; border-left: 3px solid #7c3aed;">
+                  <span style="font-size: 12px; display: block; color: #64748b;">CV Template:</span>
+                  <span style="font-size: 14px; font-weight: bold; color: #0f172a; text-transform: capitalize;">${latestCv.templateId}</span>
+                </div>
+                <p style="font-size: 14px; line-height: 1.5; color: #334155;">
+                  You can also download your CV any time or generate more layouts directly on your dashboard:
+                </p>
+                <p style="text-align: center; margin: 20px 0;">
+                  <a href="https://www.abcv.site/dashboard" style="background-color: #7c3aed; color: white; padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">Open Dashboard</a>
+                </p>
+                <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0;">
+                <p style="font-size: 11px; text-align: center; color: #94a3b8; margin: 0;">
+                  © 2026 abCV. Built with precision for premium professionals.<br>
+                  <a href="https://www.abcv.site" style="color: #7c3aed; text-decoration: none;">www.abcv.site</a>
+                </p>
+              </div>
+            `,
+            attachments: [
+              {
+                filename: `${latestCv.fullName.replace(/\s+/g, "_")}_CV.pdf`,
+                content: pdfBuffer.toString("base64"),
+                content_type: "application/pdf"
+              }
+            ]
+          });
+          console.log(`[WHOP WEBHOOK] Auto-rendered and emailed premium CV to ${email} for CV ID ${latestCv.id}`);
+        }
+      } catch (cvError) {
+        console.error("[WHOP WEBHOOK] Failed to auto-render/email premium CV to paid user:", cvError);
+      }
+
       return NextResponse.json({ success: true, action: "upgraded" });
     } 
     

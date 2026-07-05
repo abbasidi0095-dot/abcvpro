@@ -570,7 +570,7 @@ const NewPageInner = () => {
                     Watermark-free rendering is locked. Upgrade to premium to instantly download high-quality, professional PDFs.
                   </p>
                   <Button asChild size="sm" className="mt-3 w-full shimmer-btn">
-                    <a href="https://whop.com/checkout/plan_PQ7X2ccj7dkcT" target="_blank" rel="noopener noreferrer">
+                    <a href={`https://whop.com/checkout/plan_PQ7X2ccj7dkcT?email=${encodeURIComponent(emailDetail || "")}&redirect_url=${encodeURIComponent("https://www.abcv.site/thank-you")}`} target="_blank" rel="noopener noreferrer">
                       <span className="shimmer-text text-xs tracking-wide">Unlock Pro for $1.80</span>
                     </a>
                   </Button>
