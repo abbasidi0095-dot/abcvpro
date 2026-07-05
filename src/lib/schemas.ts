@@ -55,9 +55,9 @@ export function normaliseDate(s: string): string {
 export const ExperienceEntrySchema = z.object({
   company: z.string().min(1),
   title: z.string().min(1),
-  // Unicode-aware so accented month names (février, août) pass through
-  startDate: z.string().regex(/^[\p{L}]+\s+\d{4}$/u).transform(normaliseDate),
-  endDate: z.string().regex(/^[\p{L}]+\s+\d{4}$|^Present$/iu).transform(normaliseDate),
+  // Make date validators robust to allow any string, preventing formatting failures
+  startDate: z.string().transform(normaliseDate),
+  endDate: z.string().transform(normaliseDate),
   bullets: z.array(z.string().min(1)).min(1).max(6),
 });
 

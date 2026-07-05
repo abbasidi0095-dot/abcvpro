@@ -84,7 +84,11 @@ export async function POST(req: NextRequest) {
   // Save photo if provided.
   let photoBase64: string | null = null;
   if (photoFile && photoFile.size > 0) {
-    photoBase64 = await processPhoto(Buffer.from(await photoFile.arrayBuffer()));
+    try {
+      photoBase64 = await processPhoto(Buffer.from(await photoFile.arrayBuffer()));
+    } catch (photoErr) {
+      console.warn("Photo processing failed (CV saved without photo):", photoErr);
+    }
   }
 
   const cv = await prisma.cv.create({
