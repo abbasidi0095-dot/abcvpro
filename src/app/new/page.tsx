@@ -46,117 +46,89 @@ const ACCENT_SWATCHES = ["#2563eb", "#7c3aed", "#dc2626", "#059669", "#d946ef", 
 
 function TemplateMiniature({ id, accentColor }: { id: string; accentColor: string }) {
   return (
-    <div className="w-full flex-1 flex flex-col gap-1 overflow-hidden pointer-events-none mb-1.5 pt-1">
+    <div className="w-full h-full flex flex-col gap-0.5 overflow-hidden pointer-events-none">
       {id === "modern" && (
-        <div className="space-y-1 w-full">
-          <div className="h-2.5 rounded bg-foreground/10 w-full flex items-center px-1" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 15%, #f1f5f9)` }}>
-            <div className="h-1 rounded-full w-1/3" style={{ backgroundColor: accentColor }} />
+        <div className="space-y-0.5 w-full h-full flex flex-col justify-start">
+          <div className="h-1.5 rounded-xs w-full flex items-center px-0.5" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 20%, #e2e8f0)` }}>
+            <div className="h-0.5 rounded-full w-1/3" style={{ backgroundColor: accentColor }} />
           </div>
-          <div className="grid grid-cols-3 gap-1 pt-0.5">
-            <div className="col-span-2 space-y-1">
-              <div className="h-1 rounded bg-muted w-full" />
-              <div className="h-1 rounded bg-muted w-5/6" />
-              <div className="h-1 rounded bg-muted w-4/5" />
-            </div>
-            <div className="space-y-1">
-              <div className="h-1 rounded bg-muted w-full" />
-              <div className="h-1 rounded bg-muted w-2/3" />
-            </div>
+          <div className="space-y-0.5 pt-0.5">
+            <div className="h-0.5 rounded-xs bg-muted w-full" />
+            <div className="h-0.5 rounded-xs bg-muted w-5/6" />
+            <div className="h-0.5 rounded-xs bg-muted w-2/3" />
           </div>
         </div>
       )}
 
       {id === "split" && (
-        <div className="flex gap-1.5 h-full w-full">
-          <div className="w-1/3 h-full rounded p-0.5 space-y-1 flex flex-col justify-start" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 12%, #f1f5f9)` }}>
-            <div className="size-2 rounded-full mx-auto" style={{ backgroundColor: accentColor }} />
-            <div className="h-0.5 rounded bg-muted w-4/5 mx-auto" />
-            <div className="h-0.5 rounded bg-muted w-2/3 mx-auto" />
+        <div className="flex gap-0.5 h-full w-full">
+          <div className="w-1/3 h-full rounded-xs p-0.5 space-y-0.5 flex flex-col justify-start" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 15%, #e2e8f0)` }}>
+            <div className="size-1 rounded-full mx-auto" style={{ backgroundColor: accentColor }} />
+            <div className="h-0.5 rounded-xs bg-muted w-4/5 mx-auto" />
           </div>
-          <div className="flex-1 space-y-1">
-            <div className="h-1.5 rounded w-2/3" style={{ backgroundColor: accentColor }} />
-            <div className="h-1 rounded bg-muted w-full" />
-            <div className="h-1 rounded bg-muted w-5/6" />
-            <div className="h-1 rounded bg-muted w-4/5" />
+          <div className="flex-1 space-y-0.5">
+            <div className="h-1 rounded-xs w-2/3" style={{ backgroundColor: accentColor }} />
+            <div className="h-0.5 rounded-xs bg-muted w-full" />
+            <div className="h-0.5 rounded-xs bg-muted w-4/5" />
           </div>
         </div>
       )}
 
       {id === "minimal" && (
-        <div className="space-y-1.5 w-full flex flex-col justify-center items-center h-full">
-          <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
-          <div className="h-px w-full" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 25%, #e2e8f0)` }} />
-          <div className="space-y-1 w-full px-1">
-            <div className="h-1 rounded bg-muted w-full" />
-            <div className="h-1 rounded bg-muted w-5/6" />
-            <div className="h-1 rounded bg-muted w-4/5" />
+        <div className="space-y-0.5 w-full flex flex-col justify-center items-center h-full">
+          <div className="h-1 rounded-xs w-1/2" style={{ backgroundColor: accentColor }} />
+          <div className="h-px w-full bg-muted" />
+          <div className="space-y-0.5 w-full">
+            <div className="h-0.5 rounded-xs bg-muted w-full" />
+            <div className="h-0.5 rounded-xs bg-muted w-5/6" />
           </div>
         </div>
       )}
 
       {id === "bento" && (
-        <div className="grid grid-cols-3 grid-rows-3 gap-1 h-full w-full">
-          <div className="col-span-3 rounded p-0.5 flex items-center justify-between" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 10%, #f8fafc)` }}>
-            <div className="h-1 rounded bg-muted w-1/3" />
-            <div className="size-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+        <div className="grid grid-cols-2 gap-0.5 h-full w-full">
+          <div className="col-span-2 rounded-xs p-0.5 flex items-center justify-between" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 12%, #f1f5f9)` }}>
+            <div className="h-0.5 rounded-xs bg-muted w-1/3" />
+            <div className="size-1 rounded-full" style={{ backgroundColor: accentColor }} />
           </div>
-          <div className="col-span-2 row-span-2 rounded p-1 space-y-1" style={{ backgroundColor: "#f8fafc" }}>
-            <div className="h-1 rounded w-1/2" style={{ backgroundColor: accentColor }} />
-            <div className="h-0.5 rounded bg-muted w-full" />
-            <div className="h-0.5 rounded bg-muted w-5/6" />
+          <div className="rounded-xs p-0.5 space-y-0.5 bg-muted/30">
+            <div className="h-0.5 rounded-xs bg-muted w-4/5" />
           </div>
-          <div className="row-span-2 rounded p-1 flex flex-col justify-between" style={{ backgroundColor: "#f8fafc" }}>
-            <div className="size-1.5 rounded-full mx-auto" style={{ backgroundColor: accentColor }} />
-            <div className="h-0.5 rounded bg-muted w-full" />
+          <div className="rounded-xs p-0.5 bg-muted/30">
+            <div className="h-0.5 rounded-xs bg-muted w-2/3" />
           </div>
         </div>
       )}
 
       {id === "techbold" && (
-        <div className="border border-dashed p-1 h-full w-full flex flex-col justify-between relative" style={{ borderColor: `color-mix(in oklch, ${accentColor} 40%, #e2e8f0)` }}>
-          <div className="absolute top-0 left-0 size-1.5 border-t-2 border-l-2" style={{ borderColor: accentColor }} />
-          <div className="absolute bottom-0 right-0 size-1.5 border-b-2 border-r-2" style={{ borderColor: accentColor }} />
-          <div className="flex justify-between items-center">
-            <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
-            <div className="h-1 w-4 rounded bg-muted" />
-          </div>
-          <div className="space-y-1">
-            <div className="h-1 rounded bg-muted w-full" />
-            <div className="h-1 rounded bg-muted w-5/6" />
-          </div>
+        <div className="border border-dashed p-0.5 h-full w-full flex flex-col justify-between relative" style={{ borderColor: `color-mix(in oklch, ${accentColor} 30%, #e2e8f0)` }}>
+          <div className="absolute top-0 left-0 size-0.5 border-t border-l" style={{ borderColor: accentColor }} />
+          <div className="absolute bottom-0 right-0 size-0.5 border-b border-r" style={{ borderColor: accentColor }} />
+          <div className="h-1 rounded-xs w-1/2" style={{ backgroundColor: accentColor }} />
+          <div className="h-0.5 rounded-xs bg-muted w-full" />
         </div>
       )}
 
       {id === "editorial" && (
-        <div className="flex h-full w-full gap-1">
-          <div className="flex-1 space-y-1">
-            <div className="h-1.5 rounded w-2/3" style={{ backgroundColor: accentColor }} />
-            <div className="h-px w-full" style={{ backgroundColor: "#1c1917" }} />
-            <div className="h-1 rounded bg-muted w-full" />
-            <div className="h-1 rounded bg-muted w-4/5" />
+        <div className="flex h-full w-full gap-0.5">
+          <div className="flex-1 space-y-0.5">
+            <div className="h-1 rounded-xs w-2/3" style={{ backgroundColor: accentColor }} />
+            <div className="h-px w-full bg-foreground/20" />
+            <div className="h-0.5 rounded-xs bg-muted w-full" />
           </div>
-          <div className="w-[1px] h-full" style={{ backgroundColor: "#e7e5e4" }} />
-          <div className="w-1/4 h-full flex flex-col justify-start gap-1">
-            <div className="h-1 rounded bg-muted w-full" />
-            <div className="h-1 rounded bg-muted w-2/3" />
+          <div className="w-[1px] h-full bg-border" />
+          <div className="w-1/4 h-full flex flex-col justify-start">
+            <div className="h-0.5 rounded-xs bg-muted w-full" />
           </div>
         </div>
       )}
 
       {/* Fallback default template card design */}
       {id !== "modern" && id !== "split" && id !== "minimal" && id !== "bento" && id !== "techbold" && id !== "editorial" && (
-        <div className="space-y-1 w-full">
-          <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
-          <div className="grid grid-cols-4 gap-1 pt-1">
-            <div className="col-span-3 space-y-1">
-              <div className="h-1 rounded bg-muted w-full" />
-              <div className="h-1 rounded bg-muted w-5/6" />
-              <div className="h-1 rounded bg-muted w-4/5" />
-            </div>
-            <div className="space-y-1">
-              <div className="h-1 rounded bg-muted w-full" />
-            </div>
-          </div>
+        <div className="space-y-0.5 w-full h-full flex flex-col justify-center">
+          <div className="h-1 rounded-xs w-1/2" style={{ backgroundColor: accentColor }} />
+          <div className="h-0.5 rounded-xs bg-muted w-full" />
+          <div className="h-0.5 rounded-xs bg-muted w-4/5" />
         </div>
       )}
     </div>
@@ -634,35 +606,39 @@ const NewPageInner = () => {
             <Card className="p-5">
               <h2 className="text-lg font-semibold">{t("new.style.title")}</h2>
 
-              {/* Visual Template Selector Grid representing the mini-A4 layouts */}
+              {/* Visual Row-based Template Selector representing the layouts */}
               <div className="mt-4 space-y-2">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Select CV Template</Label>
-                <div className="grid grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1 no-scrollbar">
+                <div className="space-y-2 max-h-80 overflow-y-auto pr-1 no-scrollbar">
                   {templates.map((tm) => (
                     <button
                       key={tm.id}
                       type="button"
                       onClick={() => setTemplateId(tm.id)}
-                      className={`group relative aspect-[210/297] w-full rounded-xl border-2 bg-card p-3 text-left transition-all flex flex-col justify-between overflow-hidden cursor-pointer ${
+                      className={`group w-full rounded-xl border p-2 text-left transition-all flex items-center gap-3 cursor-pointer ${
                         templateId === tm.id
-                          ? "border-primary ring-2 ring-primary/10 shadow-md scale-[1.02]"
-                          : "border-border/60 hover:border-primary/40 hover:shadow-xs"
+                          ? "border-primary bg-primary/[0.02] ring-1 ring-primary/20 shadow-xs"
+                          : "border-border/60 hover:border-primary/40 hover:bg-muted/10"
                       }`}
                     >
-                      <TemplateMiniature id={tm.id} accentColor={accentColor} />
+                      {/* Left: Minimal A4 Thumbnail */}
+                      <div className="shrink-0 aspect-[210/297] w-9 border border-border/50 rounded-lg bg-card p-1 overflow-hidden flex items-center justify-center">
+                        <TemplateMiniature id={tm.id} accentColor={accentColor} />
+                      </div>
                       
-                      <div className="pt-1.5 border-t border-border/50 w-full">
-                        <div className="text-[10px] font-bold text-foreground truncate">{tm.name}</div>
-                        <div className="text-[8px] text-muted-foreground truncate uppercase tracking-widest mt-0.5">{tm.id}</div>
+                      {/* Right: Text details */}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          {tm.name}
+                          {templateId === tm.id && (
+                            <span className="size-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+                          )}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground truncate leading-relaxed mt-0.5">{tm.description}</div>
                       </div>
                     </button>
                   ))}
                 </div>
-                {activeTemplate && (
-                  <p className="text-[10px] text-muted-foreground italic leading-normal border-l-2 border-primary/30 pl-2 py-0.5">
-                    {activeTemplate.description}
-                  </p>
-                )}
               </div>
 
               {/* Accent color — swatch grid + custom */}
