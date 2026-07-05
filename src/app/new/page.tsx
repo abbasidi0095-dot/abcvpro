@@ -44,6 +44,125 @@ interface TemplateMeta {
 
 const ACCENT_SWATCHES = ["#2563eb", "#7c3aed", "#dc2626", "#059669", "#d946ef", "#ea580c", "#0d9488", "#475569"];
 
+function TemplateMiniature({ id, accentColor }: { id: string; accentColor: string }) {
+  return (
+    <div className="w-full flex-1 flex flex-col gap-1 overflow-hidden pointer-events-none mb-1.5 pt-1">
+      {id === "modern" && (
+        <div className="space-y-1 w-full">
+          <div className="h-2.5 rounded bg-foreground/10 w-full flex items-center px-1" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 15%, #f1f5f9)` }}>
+            <div className="h-1 rounded-full w-1/3" style={{ backgroundColor: accentColor }} />
+          </div>
+          <div className="grid grid-cols-3 gap-1 pt-0.5">
+            <div className="col-span-2 space-y-1">
+              <div className="h-1 rounded bg-muted w-full" />
+              <div className="h-1 rounded bg-muted w-5/6" />
+              <div className="h-1 rounded bg-muted w-4/5" />
+            </div>
+            <div className="space-y-1">
+              <div className="h-1 rounded bg-muted w-full" />
+              <div className="h-1 rounded bg-muted w-2/3" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {id === "split" && (
+        <div className="flex gap-1.5 h-full w-full">
+          <div className="w-1/3 h-full rounded p-0.5 space-y-1 flex flex-col justify-start" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 12%, #f1f5f9)` }}>
+            <div className="size-2 rounded-full mx-auto" style={{ backgroundColor: accentColor }} />
+            <div className="h-0.5 rounded bg-muted w-4/5 mx-auto" />
+            <div className="h-0.5 rounded bg-muted w-2/3 mx-auto" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <div className="h-1.5 rounded w-2/3" style={{ backgroundColor: accentColor }} />
+            <div className="h-1 rounded bg-muted w-full" />
+            <div className="h-1 rounded bg-muted w-5/6" />
+            <div className="h-1 rounded bg-muted w-4/5" />
+          </div>
+        </div>
+      )}
+
+      {id === "minimal" && (
+        <div className="space-y-1.5 w-full flex flex-col justify-center items-center h-full">
+          <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
+          <div className="h-px w-full" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 25%, #e2e8f0)` }} />
+          <div className="space-y-1 w-full px-1">
+            <div className="h-1 rounded bg-muted w-full" />
+            <div className="h-1 rounded bg-muted w-5/6" />
+            <div className="h-1 rounded bg-muted w-4/5" />
+          </div>
+        </div>
+      )}
+
+      {id === "bento" && (
+        <div className="grid grid-cols-3 grid-rows-3 gap-1 h-full w-full">
+          <div className="col-span-3 rounded p-0.5 flex items-center justify-between" style={{ backgroundColor: `color-mix(in oklch, ${accentColor} 10%, #f8fafc)` }}>
+            <div className="h-1 rounded bg-muted w-1/3" />
+            <div className="size-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+          </div>
+          <div className="col-span-2 row-span-2 rounded p-1 space-y-1" style={{ backgroundColor: "#f8fafc" }}>
+            <div className="h-1 rounded w-1/2" style={{ backgroundColor: accentColor }} />
+            <div className="h-0.5 rounded bg-muted w-full" />
+            <div className="h-0.5 rounded bg-muted w-5/6" />
+          </div>
+          <div className="row-span-2 rounded p-1 flex flex-col justify-between" style={{ backgroundColor: "#f8fafc" }}>
+            <div className="size-1.5 rounded-full mx-auto" style={{ backgroundColor: accentColor }} />
+            <div className="h-0.5 rounded bg-muted w-full" />
+          </div>
+        </div>
+      )}
+
+      {id === "techbold" && (
+        <div className="border border-dashed p-1 h-full w-full flex flex-col justify-between relative" style={{ borderColor: `color-mix(in oklch, ${accentColor} 40%, #e2e8f0)` }}>
+          <div className="absolute top-0 left-0 size-1.5 border-t-2 border-l-2" style={{ borderColor: accentColor }} />
+          <div className="absolute bottom-0 right-0 size-1.5 border-b-2 border-r-2" style={{ borderColor: accentColor }} />
+          <div className="flex justify-between items-center">
+            <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
+            <div className="h-1 w-4 rounded bg-muted" />
+          </div>
+          <div className="space-y-1">
+            <div className="h-1 rounded bg-muted w-full" />
+            <div className="h-1 rounded bg-muted w-5/6" />
+          </div>
+        </div>
+      )}
+
+      {id === "editorial" && (
+        <div className="flex h-full w-full gap-1">
+          <div className="flex-1 space-y-1">
+            <div className="h-1.5 rounded w-2/3" style={{ backgroundColor: accentColor }} />
+            <div className="h-px w-full" style={{ backgroundColor: "#1c1917" }} />
+            <div className="h-1 rounded bg-muted w-full" />
+            <div className="h-1 rounded bg-muted w-4/5" />
+          </div>
+          <div className="w-[1px] h-full" style={{ backgroundColor: "#e7e5e4" }} />
+          <div className="w-1/4 h-full flex flex-col justify-start gap-1">
+            <div className="h-1 rounded bg-muted w-full" />
+            <div className="h-1 rounded bg-muted w-2/3" />
+          </div>
+        </div>
+      )}
+
+      {/* Fallback default template card design */}
+      {id !== "modern" && id !== "split" && id !== "minimal" && id !== "bento" && id !== "techbold" && id !== "editorial" && (
+        <div className="space-y-1 w-full">
+          <div className="h-1.5 rounded w-1/2" style={{ backgroundColor: accentColor }} />
+          <div className="grid grid-cols-4 gap-1 pt-1">
+            <div className="col-span-3 space-y-1">
+              <div className="h-1 rounded bg-muted w-full" />
+              <div className="h-1 rounded bg-muted w-5/6" />
+              <div className="h-1 rounded bg-muted w-4/5" />
+            </div>
+            <div className="space-y-1">
+              <div className="h-1 rounded bg-muted w-full" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const NewPage: NextPage = () => (
   <Suspense fallback={<main className="mx-auto max-w-4xl flex-1 px-4 py-10 text-sm text-muted-foreground">Loading…</main>}>
     <NewPageInner />
@@ -515,18 +634,35 @@ const NewPageInner = () => {
             <Card className="p-5">
               <h2 className="text-lg font-semibold">{t("new.style.title")}</h2>
 
-              {/* Template dropdown */}
-              <div className="mt-3 space-y-1.5">
-                <Label>Template</Label>
-                <Select value={templateId} onValueChange={(v) => v && setTemplateId(v)}>
-                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                  <SelectContent className="max-h-72">
-                    {templates.map((tm) => (
-                      <SelectItem key={tm.id} value={tm.id}>{tm.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {activeTemplate && <p className="text-xs text-muted-foreground">{activeTemplate.description}</p>}
+              {/* Visual Template Selector Grid representing the mini-A4 layouts */}
+              <div className="mt-4 space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Select CV Template</Label>
+                <div className="grid grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1 no-scrollbar">
+                  {templates.map((tm) => (
+                    <button
+                      key={tm.id}
+                      type="button"
+                      onClick={() => setTemplateId(tm.id)}
+                      className={`group relative aspect-[210/297] w-full rounded-xl border-2 bg-card p-3 text-left transition-all flex flex-col justify-between overflow-hidden cursor-pointer ${
+                        templateId === tm.id
+                          ? "border-primary ring-2 ring-primary/10 shadow-md scale-[1.02]"
+                          : "border-border/60 hover:border-primary/40 hover:shadow-xs"
+                      }`}
+                    >
+                      <TemplateMiniature id={tm.id} accentColor={accentColor} />
+                      
+                      <div className="pt-1.5 border-t border-border/50 w-full">
+                        <div className="text-[10px] font-bold text-foreground truncate">{tm.name}</div>
+                        <div className="text-[8px] text-muted-foreground truncate uppercase tracking-widest mt-0.5">{tm.id}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {activeTemplate && (
+                  <p className="text-[10px] text-muted-foreground italic leading-normal border-l-2 border-primary/30 pl-2 py-0.5">
+                    {activeTemplate.description}
+                  </p>
+                )}
               </div>
 
               {/* Accent color — swatch grid + custom */}
