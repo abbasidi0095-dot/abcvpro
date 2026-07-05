@@ -93,8 +93,18 @@ function centeredWatermarkHtml(label: string): { foreground: string; background:
     <!-- Secure FOREGROUND red watermark overlay grid -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; min-height: 297mm; pointer-events: none; z-index: 999999; background-image: url('data:image/svg+xml;base64,${fgB64}'); background-repeat: repeat;"></div>
     
-    <!-- Free footer notice -->
-    <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, sans-serif; font-weight: bold; font-size: 7.5pt; color: #dc2626; z-index: 999999; pointer-events: none; opacity: 0.95; background: rgba(255,255,255,0.95); padding: 2px 8px; border-radius: 4px; border: 1.5px solid #fca5a5;">
+    <!-- TOP RIGHT Free notice -->
+    <div style="position: absolute; top: 8mm; right: 10mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: bold; font-size: 7.5pt; color: #dc2626; z-index: 999999; pointer-events: none; opacity: 0.95; background: rgba(255,255,255,0.95); padding: 2px 8px; border-radius: 4px; border: 1.5px solid #fca5a5; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      Free Plan — Generated on abCV.site
+    </div>
+    
+    <!-- MIDDLE RIGHT Free notice -->
+    <div style="position: absolute; top: 50%; transform: translateY(-50%); right: 10mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: bold; font-size: 7.5pt; color: #dc2626; z-index: 999999; pointer-events: none; opacity: 0.95; background: rgba(255,255,255,0.95); padding: 2px 8px; border-radius: 4px; border: 1.5px solid #fca5a5; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+      Free Plan — Generated on abCV.site
+    </div>
+    
+    <!-- BOTTOM RIGHT Free notice -->
+    <div style="position: absolute; bottom: 8mm; right: 10mm; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: bold; font-size: 7.5pt; color: #dc2626; z-index: 999999; pointer-events: none; opacity: 0.95; background: rgba(255,255,255,0.95); padding: 2px 8px; border-radius: 4px; border: 1.5px solid #fca5a5; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
       Free Plan — Generated on abCV.site
     </div>`,
     background: `
