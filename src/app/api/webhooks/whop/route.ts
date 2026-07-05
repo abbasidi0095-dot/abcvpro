@@ -1,14 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createHmac } from "crypto";
+
+const WHOP_WEBHOOK_SECRET = process.env.WHOP_WEBHOOK_SECRET || "";
 
 /**
- * Production-ready Whop Webhook Handler.
+ * Production-ready Whop Webhook Handler with HMAC-SHA256 Signature Verification.
  * Integrates directly with Whop's automated membership triggers to provision Pro features.
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    console.log("[WHOP WEBHOOK] Received payload:", JSON.stringify(body));
+    let body: any;
+    const signature = req.headers.get("x-whop-signature") || req.headers.get("action-signature");
+
+    if (WHOP_WEBHOOK_SECRET) {
+      if (!signature) {
+        console.error("[WHOP WEBHOOK] Validation failed: Signature header ('x-whop-signature' or 'action-signature') is missing.");
+        return NextResponse.json({ error: "Signature header missing" }, { status: 401 });
+      }
+
+      // Read raw request body as text for cryptographic hashing
+      const rawBody = await req.text();
+      const hmac = createHmac("sha256", WHOP_WEBHOOK_SECRET);
+      const computed = hmac.update(rawBody).digest("hex");
+
+      if (computed !== signature) {
+        console.error("[WHOP WEBHOOK] Validation failed: Computed signature does not match header signature.");
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      }
+
+      // Successfully verified. Parse body from raw text
+      body = JSON.parse(rawBody);
+    } else {
+      // Fallback if no secret is set yet
+      body = await req.json();
+    }
+
+    console.log("[WHOP WEBHOOK] Successfully verified payload:", JSON.stringify(body));
 
     const action = body.action || "";
     const data = body.data || {};
