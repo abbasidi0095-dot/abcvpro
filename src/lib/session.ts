@@ -10,6 +10,8 @@ import {
   type CognitoUser,
 } from "@/lib/cognito";
 
+import { isUserWhopPro } from "@/lib/whop";
+
 async function resolveCognitoUser(): Promise<CognitoUser | null> {
   const idToken = await readIdToken();
   if (!idToken) { console.error("No ID token found in cookies"); return null; }
@@ -40,13 +42,29 @@ async function resolveCognitoUser(): Promise<CognitoUser | null> {
 export async function ensureLocalUser(cu: CognitoUser): Promise<{ user: User; isNew: boolean }> {
   const name = cu.name ?? cu.email.split("@")[0];
 
+  // Try checking/syncing with Whop to keep user status updated
+  let whopPro = false;
+  try {
+    whopPro = await isUserWhopPro(cu.email);
+  } catch (err) {
+    console.error("Whop sync error in ensureLocalUser:", err);
+  }
+
   const existing = await prisma.user.findUnique({ where: { cognitoSub: cu.sub } });
   if (existing) {
-    if (existing.email !== cu.email || existing.name !== name) {
-      await prisma.user.update({
+    const shouldUpdateEmailOrName = existing.email !== cu.email || existing.name !== name;
+    const shouldUpdatePro = whopPro && !existing.isPro; // Upgrade them if they are pro on Whop but not locally
+
+    if (shouldUpdateEmailOrName || shouldUpdatePro) {
+      const updated = await prisma.user.update({
         where: { id: existing.id },
-        data: { email: cu.email, name },
+        data: { 
+          email: cu.email, 
+          name,
+          ...(shouldUpdatePro ? { isPro: true } : {})
+        },
       });
+      return { user: updated, isNew: false };
     }
     return { user: existing, isNew: false };
   }
@@ -56,13 +74,22 @@ export async function ensureLocalUser(cu: CognitoUser): Promise<{ user: User; is
   if (byEmail) {
     const user = await prisma.user.update({
       where: { id: byEmail.id },
-      data: { cognitoSub: cu.sub, name },
+      data: { 
+        cognitoSub: cu.sub, 
+        name,
+        ...(whopPro ? { isPro: true } : {})
+      },
     });
     return { user, isNew: false };
   }
 
   const user = await prisma.user.create({
-    data: { email: cu.email, name, cognitoSub: cu.sub },
+    data: { 
+      email: cu.email, 
+      name, 
+      cognitoSub: cu.sub,
+      isPro: whopPro
+    },
   });
   return { user, isNew: true };
 }
